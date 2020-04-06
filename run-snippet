@@ -1,0 +1,31 @@
+#!/usr/bin/env python
+import argparse
+import sys
+
+parser = argparse.ArgumentParser()
+
+parser.add_argument('snippet')
+parser.add_argument('--show-notes', action ='store_true', default = False)
+
+args = parser.parse_args()
+
+with open(args.snippet) as fh:
+    lines = fh.readlines()
+
+fence = []
+for i, line in enumerate(lines):
+    if line.startswith('```'):
+        fence.append(i)
+    if line.startswith('>') and args.show_notes:
+        print(line)
+
+if '#snippet\n' not in lines:
+    print('This is not a snippet')
+    sys.exit(1)
+
+if '#python\n' in lines:
+    exec(''.join(lines[fence[0] + 1:fence[1]]))
+    sys.exit(0)
+else:
+    print('This is not a python snippet')
+    sys.exit(1)
